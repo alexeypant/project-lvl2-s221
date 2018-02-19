@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "difference generator",
   "main": "dist/index.js",
+  "bin": {
+    "gendiff": "dist/bin/gendiff.js"
+  },
   "files": [
     "dist"
   ],
@@ -18,7 +21,9 @@
   },
   "author": "Alexey Panteleychuk",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "commander": "^2.14.1"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",

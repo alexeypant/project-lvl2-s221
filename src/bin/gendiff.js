@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-//import { getResponseAndShow } from '..';
+import { genDiff } from '../index';
 
-console.log('Welcome to the GENDIFF');
-
-//getResponseAndShow();
+genDiff();
