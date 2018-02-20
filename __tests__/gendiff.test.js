@@ -1,12 +1,7 @@
 import genDiff from '../src';
 
-// test('difference between', () => {
-//     expect(genDiff(firstFile, secondFile)).toBe(resultFile);
-// });
-
-const jsonBefore = '{"host": "hexlet.io", "timeout": 50, "proxy": "123.234.53.22"}';
-const jsonAfter = '{"timeout": 20, "verbose": true, "host": "hexlet.io" }';
+const result = '{\n\thost: hexlet.io\n\t- timeout: 50\n\t+ timeout: 20\n\t- proxy: 123.234.53.22\n\t+ verbose: true\n}';
 
 test('genDiff', () => {
-    expect(genDiff()).toBe('{"host": "hexlet.io", "timeout": 50, "proxy": "123.234.53.22"}');
+    expect(genDiff('./__tests__/__fixtures__/before.json', './__tests__/__fixtures__/after.json' )).toBe(result);
 });
