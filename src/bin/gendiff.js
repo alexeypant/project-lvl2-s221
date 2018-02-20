@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import commander from 'commander';
 import { genDiff } from '../';
 
 const run = () => {

@@ -1,4 +1,3 @@
-import commander from 'commander';
 import fs from 'fs';
 import _ from 'lodash';
 
