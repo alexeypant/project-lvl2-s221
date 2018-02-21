@@ -1,10 +1,23 @@
 import fs from 'fs';
 import _ from 'lodash';
-
+import yaml from 'js-yaml';
+import path from 'path';
 
 const genDiff = (path1, path2) => {
-  const before = JSON.parse(fs.readFileSync(path1));
-  const after = JSON.parse(fs.readFileSync(path2));
+  const afterFile = fs.readFileSync(path2);
+  const beforeFile = fs.readFileSync(path1);
+  const extention = path.extname(path1);
+
+  let after;
+  let before;
+
+  if (extention === '.json') {
+    after = JSON.parse(afterFile);
+    before = JSON.parse(beforeFile);
+  } else if (extention === '.yml') {
+    after = yaml.safeLoad(afterFile);
+    before = yaml.safeLoad(beforeFile);
+  }
 
   const keysOfBefore = Object.keys(before);
   const keysOfAfter = Object.keys(after);
