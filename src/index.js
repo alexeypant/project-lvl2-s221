@@ -2,17 +2,17 @@ import fs from 'fs';
 import _ from 'lodash';
 import yaml from 'js-yaml';
 import path from 'path';
-//import ini from 'ini';
+import ini from 'ini';
 
 const genDiff = (path1, path2) => {
-  const afterFile = fs.readFileSync(path2);
-  const beforeFile = fs.readFileSync(path1);
+  const beforeFile = fs.readFileSync(path1, 'utf-8');
+  const afterFile = fs.readFileSync(path2, 'utf-8');
   const extention = path.extname(path1);
 
   const parser = {
     '.json': JSON.parse,
     '.yml': yaml.safeLoad,
-    //'.ini': ini.parse,
+    '.ini': ini.parse,
   };
 
   const before = parser[extention](beforeFile);

@@ -16,9 +16,9 @@ test('genDiff YAML', () => {
   expect(generated).toBe(expected);
 });
 
-// test('genDiff INI', () => {
-//   const before = './__tests__/__fixtures__/before.ini';
-//   const after = './__tests__/__fixtures__/after.ini';
-//   const generated = genDiff(before, after);
-//   expect(generated).toBe(expected);
-// });
+test('genDiff INI', () => {
+  const before = './__tests__/__fixtures__/before.ini';
+  const after = './__tests__/__fixtures__/after.ini';
+  const generated = genDiff(before, after);
+  expect(generated).toBe(expected);
+});
