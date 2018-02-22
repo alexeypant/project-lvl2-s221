@@ -1,7 +1,24 @@
 import genDiff from '../src';
+import expected from './__fixtures__/expected';
 
-const result = '{\n\thost: hexlet.io\n\t- timeout: 50\n\t+ timeout: 20\n\t- proxy: 123.234.53.22\n\t+ verbose: true\n}';
-
-test('genDiff', () => {
-  expect(genDiff('./__tests__/__fixtures__/before.json', './__tests__/__fixtures__/after.json')).toBe(result);
+test('genDiff JSON', () => {
+  const before = './__tests__/__fixtures__/before.json';
+  const after = './__tests__/__fixtures__/after.json';
+  const generated = genDiff(before, after);
+  expect(generated).toBe(expected);
 });
+
+
+test('genDiff YAML', () => {
+  const before = './__tests__/__fixtures__/before.yml';
+  const after = './__tests__/__fixtures__/after.yml';
+  const generated = genDiff(before, after);
+  expect(generated).toBe(expected);
+});
+
+// test('genDiff INI', () => {
+//   const before = './__tests__/__fixtures__/before.ini';
+//   const after = './__tests__/__fixtures__/after.ini';
+//   const generated = genDiff(before, after);
+//   expect(generated).toBe(expected);
+// });
