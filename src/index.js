@@ -3,18 +3,18 @@ import _ from 'lodash';
 import yaml from 'js-yaml';
 import path from 'path';
 import ini from 'ini';
+import { find } from 'lodash';
+
+const parser = {
+  '.json': JSON.parse,
+  '.yml': yaml.safeLoad,
+  '.ini': ini.parse,
+};
 
 const genDiff = (path1, path2) => {
   const beforeFile = fs.readFileSync(path1, 'utf-8');
   const afterFile = fs.readFileSync(path2, 'utf-8');
   const extention = path.extname(path1);
-
-  const parser = {
-    '.json': JSON.parse,
-    '.yml': yaml.safeLoad,
-    '.ini': ini.parse,
-  };
-
   const before = parser[extention](beforeFile);
   const after = parser[extention](afterFile);
 
@@ -37,4 +37,65 @@ const genDiff = (path1, path2) => {
   return `{\n\t${_.flatten(difference).join('\n\t')}\n}`;
 };
 
-export default genDiff;
+const buildAST = (objBefore, objAfter) => {
+  const keysBefore = Object.keys(objBefore);
+  const keysAfter = Object.keys(objAfter);
+  const keys = _.union(keysBefore, keysAfter);
+  const arrayAST = keys.reduce((acc, key) => {
+    if (objBefore[key] instanceof Object && objAfter[key] instanceof Object) {
+      return [...acc, { key, status: 'object', children: buildAST(objBefore[key], objAfter[key]) }];
+    } else if (!objAfter[key] && objBefore[key]) {
+      return [...acc, { key, status: 'deleted', value: objBefore[key] }];
+    } else if (!objBefore[key] && objAfter[key]) {
+      return [...acc, { key, status: 'added', value: objAfter[key] }];
+    } else if (objBefore[key] !== objAfter[key]) {
+      return [...acc, { key, status: 'deleted', value: objBefore[key] }, { key, status: 'added', value: objAfter[key] }];
+    }
+    return [...acc, { key, status: 'unchanged', value: objBefore[key] }];
+  }, []);
+  return arrayAST;
+};
+
+const render = (ast, level = 1) => {
+  const shift = 4;
+  const indent = ' '.repeat(level * shift);
+  const processValue = (value, d = level + 1) => {
+    if (value instanceof Object) {
+      const innerIndent = ' '.repeat(d * shift);
+      const innerElements = _.keys(value).map(key => `${innerIndent}${key}: ${processValue(value[key])}`);
+      return `{\n${innerElements.join('\n')}\n${indent}}`;
+    }
+    return value;
+  };
+  const makeString = (element) => {
+    const { key, status, value, children, } = element;
+    switch (status) {
+      case 'object':
+        return `${indent}${key}: ${render(children, level + 1)}`;
+      case 'unchanged':
+        return `${indent}${key}: ${processValue(value)}`;
+      case 'deleted':
+        return `${indent.slice(2)}- ${key}: ${processValue(value)}`;
+      case 'added':
+        return `${indent.slice(2)}+ ${key}: ${processValue(value)}`;
+      default:
+        return '';
+    }
+  };
+
+  const rendered = ast.reduce((acc, element) => ([...acc, makeString(element)]), []);
+  return `{\n${rendered.join('\n')}\n${indent.slice(shift)}}`;
+};
+
+const genDiffRec = (path1, path2) => {
+  const fileBefore = fs.readFileSync(path1, 'utf8');
+  const fileAfter = fs.readFileSync(path2, 'utf8');
+  const extention = path.extname(path1);
+  const objBefore = parser[extention](fileBefore);
+  const objAfter = parser[extention](fileAfter);
+  const objAST = buildAST(objBefore, objAfter);
+  const difference = render(objAST);
+  return difference;
+};
+
+export default genDiffRec;
