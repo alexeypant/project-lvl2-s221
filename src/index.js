@@ -4,6 +4,7 @@ import yaml from 'js-yaml';
 import path from 'path';
 import ini from 'ini';
 import { find } from 'lodash';
+import render from './renderers';
 
 const parser = {
   '.json': JSON.parse,
@@ -56,47 +57,14 @@ const buildAST = (objBefore, objAfter) => {
   return arrayAST;
 };
 
-const render = (ast, level = 1) => {
-  const shift = 4;
-  const indent = ' '.repeat(level * shift);
-  const processValue = (value, d = level + 1) => {
-    if (value instanceof Object) {
-      const innerIndent = ' '.repeat(d * shift);
-      const innerElements = _.keys(value).map(key => `${innerIndent}${key}: ${processValue(value[key])}`);
-      return `{\n${innerElements.join('\n')}\n${indent}}`;
-    }
-    return value;
-  };
-  const makeString = (element) => {
-    const { key, type, oldValue, newValue, children, } = element;
-    switch (type) {
-      case 'nested':
-        return `${indent}${key}: ${render(children, level + 1)}`;
-      case 'unchanged':
-        return `${indent}${key}: ${processValue(oldValue)}`;
-      case 'deleted':
-        return `${indent.slice(2)}- ${key}: ${processValue(oldValue)}`;
-      case 'added':
-        return `${indent.slice(2)}+ ${key}: ${processValue(newValue)}`;
-      case 'changed':
-        return `${indent.slice(2)}- ${key}: ${processValue(oldValue)}\n${indent.slice(2)}+ ${key}: ${processValue(newValue)}`;
-      default:
-        return null;
-    }
-  };
-
-  const rendered = ast.reduce((acc, element) => ([...acc, makeString(element)]), []);
-  return `{\n${rendered.join('\n')}\n${indent.slice(shift)}}`;
-};
-
-const genDiffRec = (path1, path2) => {
+const genDiffRec = (path1, path2, format) => {
   const fileBefore = fs.readFileSync(path1, 'utf8');
   const fileAfter = fs.readFileSync(path2, 'utf8');
   const extention = path.extname(path1);
   const objBefore = parser[extention](fileBefore);
   const objAfter = parser[extention](fileAfter);
   const objAST = buildAST(objBefore, objAfter);
-  const difference = render(objAST);
+  const difference = render(format)(objAST);
   return difference;
 };
 
