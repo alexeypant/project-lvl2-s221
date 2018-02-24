@@ -8,6 +8,6 @@ export default (opt) => {
     case 'json':
       return jsonRenderer;
     default:
-      throw new Error(`${opt} format isn\`t supported!`);
+      return null;
   }
 };
