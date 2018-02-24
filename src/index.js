@@ -43,15 +43,15 @@ const buildAST = (objBefore, objAfter) => {
   const keys = _.union(keysBefore, keysAfter);
   const arrayAST = keys.reduce((acc, key) => {
     if (objBefore[key] instanceof Object && objAfter[key] instanceof Object) {
-      return [...acc, { key, status: 'object', children: buildAST(objBefore[key], objAfter[key]) }];
+      return [...acc, { key, type: 'nested', children: buildAST(objBefore[key], objAfter[key]) }];
     } else if (!objAfter[key] && objBefore[key]) {
-      return [...acc, { key, status: 'deleted', value: objBefore[key] }];
+      return [...acc, { key, type: 'deleted', oldValue: objBefore[key], newValue: '' }];
     } else if (!objBefore[key] && objAfter[key]) {
-      return [...acc, { key, status: 'added', value: objAfter[key] }];
+      return [...acc, { key, type: 'added', oldValue: '', newValue: objAfter[key]}];
     } else if (objBefore[key] !== objAfter[key]) {
-      return [...acc, { key, status: 'deleted', value: objBefore[key] }, { key, status: 'added', value: objAfter[key] }];
+      return [...acc, { key, type: 'changed', oldValue: objBefore[key], newValue: objAfter[key]}];
     }
-    return [...acc, { key, status: 'unchanged', value: objBefore[key] }];
+    return [...acc, { key, type: 'unchanged', oldValue: objBefore[key], newValue: objBefore[key]}];
   }, []);
   return arrayAST;
 };
@@ -68,18 +68,20 @@ const render = (ast, level = 1) => {
     return value;
   };
   const makeString = (element) => {
-    const { key, status, value, children, } = element;
-    switch (status) {
-      case 'object':
+    const { key, type, oldValue, newValue, children, } = element;
+    switch (type) {
+      case 'nested':
         return `${indent}${key}: ${render(children, level + 1)}`;
       case 'unchanged':
-        return `${indent}${key}: ${processValue(value)}`;
+        return `${indent}${key}: ${processValue(oldValue)}`;
       case 'deleted':
-        return `${indent.slice(2)}- ${key}: ${processValue(value)}`;
+        return `${indent.slice(2)}- ${key}: ${processValue(oldValue)}`;
       case 'added':
-        return `${indent.slice(2)}+ ${key}: ${processValue(value)}`;
+        return `${indent.slice(2)}+ ${key}: ${processValue(newValue)}`;
+      case 'changed':
+        return `${indent.slice(2)}- ${key}: ${processValue(oldValue)}\n${indent.slice(2)}+ ${key}: ${processValue(newValue)}`;
       default:
-        return '';
+        return null;
     }
   };
 

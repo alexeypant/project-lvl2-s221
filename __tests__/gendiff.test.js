@@ -1,6 +1,5 @@
 import fs from 'fs';
 import genDiff from '../src';
-import expected from './__fixtures__/expected';
 
 describe('genDiff flat', () => {
   test('json', () => {
