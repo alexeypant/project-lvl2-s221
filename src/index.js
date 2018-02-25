@@ -20,13 +20,13 @@ const buildAST = (objBefore, objAfter) => {
       return [...acc, {
         key, type: 'nested', children: buildAST(objBefore[key], objAfter[key]),
       }];
-    } else if (!objAfter[key] && objBefore[key]) {
+    } else if (!(_.has(objAfter, key)) && _.has(objBefore, key)) {
       return [...acc, {
-        key, type: 'deleted', oldValue: objBefore[key], newValue: '',
+        key, type: 'deleted', oldValue: objBefore[key],
       }];
-    } else if (!objBefore[key] && objAfter[key]) {
+    } else if (! (_.has(objBefore, key)) && _.has(objAfter, key)) {
       return [...acc, {
-        key, type: 'added', oldValue: '', newValue: objAfter[key],
+        key, type: 'added', newValue: objAfter[key],
       }];
     } else if (objBefore[key] !== objAfter[key]) {
       return [...acc, {
