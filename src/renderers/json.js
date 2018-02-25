@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import path from 'path';
 
 const render = (ast, level = 1) => {
   const shift = 4;
@@ -13,7 +12,9 @@ const render = (ast, level = 1) => {
     return value;
   };
   const makeString = (element) => {
-    const { key, type, oldValue, newValue, children, } = element;
+    const {
+      key, type, oldValue, newValue, children,
+    } = element;
     switch (type) {
       case 'nested':
         return `${indent}${key}: ${render(children, level + 1)}`;
