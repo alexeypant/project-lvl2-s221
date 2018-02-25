@@ -1,5 +1,5 @@
 import plainRenderer from './plain';
-import jsonRenderer from './json';
+import jsonRenderer from './diff';
 
 export default (opt) => {
   switch (opt) {

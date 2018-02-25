@@ -25,13 +25,13 @@ const render = (ast, level = 1) => {
       case 'added':
         return `${indent.slice(2)}+ ${key}: ${processValue(newValue)}`;
       case 'changed':
-        return `${indent.slice(2)}- ${key}: ${processValue(oldValue)}\n${indent.slice(2)}+ ${key}: ${processValue(newValue)}`;
+        return [`${indent.slice(2)}- ${key}: ${processValue(oldValue)}`, `${indent.slice(2)}+ ${key}: ${processValue(newValue)}`];
       default:
         return null;
     }
   };
 
-  const rendered = ast.reduce((acc, element) => ([...acc, makeString(element)]), []);
+  const rendered = _.flatten(ast.reduce((acc, element) => ([...acc, makeString(element)]), []));
   return `{\n${rendered.join('\n')}\n${indent.slice(shift)}}`;
 };
 
