@@ -24,7 +24,7 @@ const buildAST = (objBefore, objAfter) => {
       return [...acc, {
         key, type: 'deleted', oldValue: objBefore[key],
       }];
-    } else if (! (_.has(objBefore, key)) && _.has(objAfter, key)) {
+    } else if (!(_.has(objBefore, key)) && _.has(objAfter, key)) {
       return [...acc, {
         key, type: 'added', newValue: objAfter[key],
       }];
