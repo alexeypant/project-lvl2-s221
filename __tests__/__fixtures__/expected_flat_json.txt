@@ -1,19 +1,24 @@
-{
-  "host": {
-    "type": "unchanged",
-    "value": "hexlet.io"
-  },
-  "timeout": {
-    "type": "changed",
-    "oldValue": "50",
-    "newValue": "20"
-  },
-  "proxy": {
-    "type": "deleted",
-    "value": "123.234.53.22"
-  },
-  "verbose": {
-    "type": "added",
-    "value": "true"
-  }
-}
+[
+ {
+  "key": "host",
+  "type": "unchanged",
+  "oldValue": "hexlet.io",
+  "newValue": "hexlet.io"
+ },
+ {
+  "key": "timeout",
+  "type": "changed",
+  "oldValue": 50,
+  "newValue": 20
+ },
+ {
+  "key": "proxy",
+  "type": "deleted",
+  "oldValue": "123.234.53.22"
+ },
+ {
+  "key": "verbose",
+  "type": "added",
+  "newValue": true
+ }
+]
